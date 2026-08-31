@@ -34,7 +34,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1.5rem 0.75rem 3rem 0.75rem;
+      padding: 1.5rem 0.5rem 3rem 0.5rem;
       outline: none;
       touch-action: manipulation;
     }
@@ -46,7 +46,7 @@
     }
 
     header h1 {
-      font-size: 2.5rem;
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 900;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -55,6 +55,7 @@
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.4));
       animation: titleGlow 4s ease-in-out infinite alternate;
+      margin: 0;
     }
 
     @keyframes titleGlow {
@@ -71,7 +72,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.75rem 1rem;
+      padding: 0.75rem;
       border-radius: 16px;
       margin-bottom: 1.5rem;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -85,13 +86,10 @@
       z-index: 10;
     }
 
+    /* Hide scrollbar for a cleaner mobile look, but allow scrolling */
     .controls::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .controls::-webkit-scrollbar-thumb {
-      background: rgba(56, 189, 248, 0.3);
-      border-radius: 4px;
+      height: 0px;
+      background: transparent;
     }
 
     .control-group {
@@ -119,9 +117,9 @@
       border: none;
       outline: none;
       cursor: pointer;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      padding: 0.1rem 0;
+      padding: 0.2rem 0;
     }
 
     select option {
@@ -152,7 +150,7 @@
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
-      width: 75px;
+      width: 70px;
       height: 6px;
       background: #05080f;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -164,8 +162,8 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #38bdf8;
       cursor: pointer;
@@ -177,19 +175,16 @@
       font-size: 0.78rem;
       font-weight: 700;
       color: #38bdf8;
-      min-width: 32px;
+      min-width: 36px;
       text-align: right;
     }
 
     /* Action Buttons */
-    .btn-control {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(56, 189, 248, 0.02));
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 0.45rem 0.85rem;
+    .btn-control, .btn-reset-trans, .btn-sustain-toggle, .btn-stop {
+      padding: 0.5rem 0.85rem;
       border-radius: 10px;
       font-weight: 600;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -202,10 +197,34 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .btn-control:hover {
-      background: rgba(56, 189, 248, 0.2);
-      border-color: rgba(56, 189, 248, 0.6);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    .btn-control {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(56, 189, 248, 0.02));
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-control:active, .btn-reset-trans:active, .btn-sustain-toggle:active {
+      transform: scale(0.96);
+    }
+
+    @media (hover: hover) {
+      .btn-control:hover {
+        background: rgba(56, 189, 248, 0.2);
+        border-color: rgba(56, 189, 248, 0.6);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+      }
+      .btn-reset-trans:hover {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.6);
+      }
+      .btn-sustain-toggle:hover {
+        border-color: rgba(148, 163, 184, 0.4);
+        color: #fff;
+      }
+      .btn-stop:hover {
+        background: linear-gradient(135deg, #f87171, #ef4444);
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+      }
     }
 
     #transpose-val {
@@ -218,50 +237,12 @@
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.02));
       color: #f59e0b;
       border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 0.45rem 0.75rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.82rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      user-select: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-reset-trans:hover {
-      background: rgba(245, 158, 11, 0.2);
-      border-color: rgba(245, 158, 11, 0.6);
     }
 
     .btn-sustain-toggle {
       background: linear-gradient(135deg, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0.02));
       color: var(--text-muted);
       border: 1px solid rgba(148, 163, 184, 0.2);
-      padding: 0.45rem 0.85rem;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.35rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      user-select: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-sustain-toggle:hover {
-      border-color: rgba(148, 163, 184, 0.4);
-      color: #fff;
     }
 
     .btn-sustain-toggle.active {
@@ -275,24 +256,10 @@
       background: linear-gradient(135deg, #ef4444, #dc2626);
       color: #fff;
       border: none;
-      padding: 0.45rem 0.85rem;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 0.82rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.35rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
     }
 
-    .btn-stop:hover {
-      background: linear-gradient(135deg, #f87171, #ef4444);
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+    .btn-stop:active {
+      transform: scale(0.92);
     }
 
     /* Grid Layout */
@@ -310,49 +277,51 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
       color: var(--text-muted);
     }
 
     .chord-row {
       display: grid;
       grid-template-columns: repeat(12, 1fr);
-      gap: 0.35rem;
+      gap: 0.5rem;
     }
 
     .chord-pad {
       background-color: var(--card-bg);
       border: 1.5px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 0.65rem 0.2rem;
+      border-radius: 12px;
+      padding: 0.75rem 0.25rem;
       text-align: center;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.1s ease, background-color 0.1s;
+      transition: transform 0.1s ease, background-color 0.15s, border-color 0.15s;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      gap: 0.4rem;
-      min-height: 110px;
+      gap: 0.5rem;
+      min-height: 120px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    .chord-pad:hover {
-      background-color: var(--card-hover);
-      border-color: rgba(56, 189, 248, 0.4);
+    @media (hover: hover) {
+      .chord-pad:hover {
+        background-color: var(--card-hover);
+        border-color: rgba(56, 189, 248, 0.4);
+      }
     }
 
     .chord-pad.major.active {
       background-color: var(--major-accent) !important;
-      border-color: #c7d2fe;
+      border-color: #c7d2fe !important;
       box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
       transform: scale(0.95);
     }
 
     .chord-pad.minor.active {
       background-color: var(--minor-accent) !important;
-      border-color: #fbcfe8;
+      border-color: #fbcfe8 !important;
       box-shadow: 0 0 20px rgba(236, 72, 153, 0.8);
       transform: scale(0.95);
     }
@@ -361,12 +330,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.2rem;
+      gap: 0.25rem;
       pointer-events: none;
     }
 
     .chord-name {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #fff;
     }
@@ -376,9 +345,9 @@
       background: #070a12;
       color: var(--text-muted);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.1rem 0.35rem;
+      padding: 0.15rem 0.4rem;
       border-radius: 4px;
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
     }
@@ -387,18 +356,27 @@
       background: #090d16;
       color: #38bdf8;
       border: 1.5px solid rgba(56, 189, 248, 0.3);
-      padding: 0.3rem 0.4rem;
+      padding: 0.4rem;
       border-radius: 6px;
-      font-size: 0.68rem;
+      font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
-      width: 85%;
+      width: 90%;
+      max-width: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
+      touch-action: manipulation;
     }
 
-    .octave-btn:hover {
+    @media (hover: hover) {
+      .octave-btn:hover {
+        background: #38bdf8;
+        color: #090d16;
+      }
+    }
+    .octave-btn:active {
+      transform: scale(0.92);
       background: #38bdf8;
       color: #090d16;
     }
@@ -410,7 +388,7 @@
       background: var(--card-bg);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
-      padding: 1rem 0.75rem;
+      padding: 1rem 0.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -432,22 +410,30 @@
 
     .piano-keyboard {
       display: flex;
-      height: 150px;
+      height: 160px;
       width: 100%;
       user-select: none;
       background: #05080f;
-      border-radius: 10px;
+      border-radius: 8px;
       border: 2px solid #000;
       overflow-x: auto;
       overflow-y: hidden;
-      touch-action: pan-x;
+      touch-action: pan-x; /* Allows horizontal scrolling on mobile */
+    }
+    
+    .piano-keyboard::-webkit-scrollbar {
+      height: 6px;
+    }
+    .piano-keyboard::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
     }
 
     .white-key-container {
       position: relative;
-      flex: 1;
+      flex: 1 0 auto;
       height: 100%;
-      min-width: 24px;
+      min-width: 32px; /* Touch target minimum */
       display: flex;
     }
 
@@ -463,10 +449,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      padding-bottom: 5px;
+      padding-bottom: 8px;
       color: #64748b;
-      font-size: 0.58rem;
+      font-size: 0.65rem;
       font-weight: 700;
+      transition: background 0.05s;
     }
 
     .white-key-container:last-child .white-key {
@@ -475,10 +462,10 @@
 
     .black-key {
       position: absolute;
-      right: -32%;
+      right: -35%;
       top: 0;
-      width: 64%;
-      height: 58%;
+      width: 70%;
+      height: 60%;
       background: #111827;
       border: 1px solid #090d16;
       border-bottom: 4px solid #000000;
@@ -488,10 +475,11 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding-bottom: 3px;
+      padding-bottom: 4px;
       color: #94a3b8;
-      font-size: 0.45rem;
+      font-size: 0.5rem;
       font-weight: 700;
+      transition: background 0.05s;
     }
 
     /* Active Highlight States */
@@ -540,27 +528,42 @@
       box-shadow: 0 0 16px rgba(56, 189, 248, 1);
     }
 
-    @media (max-width: 1024px) {
+    /* RESPONSIVE DESIGN (Tablets & Mobile) */
+    @media (max-width: 1200px) {
       .chord-row {
         grid-template-columns: repeat(6, 1fr);
-        gap: 0.45rem;
-      }
-      .chord-pad {
-        min-height: 120px;
       }
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .chord-row {
         grid-template-columns: repeat(4, 1fr);
       }
-      header h1 {
-        font-size: 2rem;
-      }
       .piano-title {
         flex-direction: column;
-        gap: 0.3rem;
         align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .white-key-container {
+        min-width: 36px; /* Slightly wider on mid-sized mobile to ensure tap reliability */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .chord-row {
+        grid-template-columns: repeat(3, 1fr); /* Prevents boxes from becoming too tiny */
+        gap: 0.4rem;
+      }
+      .chord-pad {
+        min-height: 110px;
+        padding: 0.5rem 0.2rem;
+      }
+      .piano-keyboard {
+        height: 140px;
+      }
+      .btn-control, .btn-reset-trans, .btn-sustain-toggle, .btn-stop {
+        font-size: 0.8rem;
+        padding: 0.45rem 0.75rem;
       }
     }
   </style>
@@ -573,7 +576,7 @@
 
   <div class="controls">
     <div class="control-group">
-      <label for="instrument-select">Instrument:</label>
+      <label for="instrument-select">Inst:</label>
       <select id="instrument-select">
         <optgroup label="🎹 Pianos & Keyboards">
           <option value="piano" selected>Concert Grand Piano</option>
@@ -599,26 +602,26 @@
       </select>
     </div>
 
-    <button id="global-oct-btn" class="btn-control" title="Cycle octave (1 -> 2 -> 3) or use Up/Down Arrow keys">
-      🌐 Master Oct: 2 (↑/↓)
+    <button id="global-oct-btn" class="btn-control" title="Cycle master octave">
+      🌐 Oct: <span id="global-oct-val">2</span> (↑/↓)
     </button>
 
-    <button id="transpose-btn" class="btn-control" title="Use Left/Right arrow keys to transpose pitch (+/- semitones)">
-      🎵 Transpose: <span id="transpose-val">0 st</span> (←/→)
+    <button id="transpose-btn" class="btn-control" title="Transpose pitch">
+      🎵 Trans: <span id="transpose-val">0 st</span> (←/→)
     </button>
 
-    <button id="reset-transpose-btn" class="btn-reset-trans" title="Click or press 'Tab' to reset transpose to 0 st">
-      🔄 Reset (Tab)
+    <button id="reset-transpose-btn" class="btn-reset-trans" title="Reset transpose">
+      🔄 Reset
     </button>
 
     <div class="volume-container">
-      <label for="volume-slider">Volume:</label>
+      <label for="volume-slider">Vol:</label>
       <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1.00">
       <span id="vol-display" class="vol-display">100%</span>
     </div>
 
-    <button id="sustain-btn" class="btn-sustain-toggle" title="Click or press Shift key to toggle sustain">
-      🎛️ Sustain: <span id="sustain-status-text">OFF (Shift)</span>
+    <button id="sustain-btn" class="btn-sustain-toggle" title="Toggle Sustain">
+      🎛️ Sustain: <span id="sustain-status-text">OFF</span>
     </button>
 
     <button id="stop-btn" class="btn-stop" title="Stop Audio (Esc)">
@@ -640,7 +643,7 @@
 
   <div class="piano-wrapper">
     <div class="piano-title">
-      <span>🎹 Live Playable 5-Octave Piano (C2 – B6)</span>
+      <span>🎹 Live Playable 5-Octave Piano (Swipe to scroll)</span>
       <span id="playing-chord-label">Active Chord: None</span>
     </div>
     <div class="piano-keyboard" id="piano-keys-container"></div>
@@ -652,13 +655,7 @@
     }
 
     function normalizeKey(key) {
-      const shiftMap = {
-        '{': '[',
-        '}': ']',
-        ':': ';',
-        '"': "'",
-        '|': '\\'
-      };
+      const shiftMap = { '{': '[', '}': ']', ':': ';', '"': "'", '|': '\\' };
       const lower = key.toLowerCase();
       return shiftMap[key] || shiftMap[lower] || lower;
     }
@@ -713,26 +710,14 @@
     const CHORDS_CONFIG = [];
 
     MAJOR_NAMES.forEach((name, i) => {
-      CHORDS_CONFIG.push({
-        key: MAJOR_KEYS[i],
-        name: name,
-        type: 'major',
-        rootIndex: i,
-        octave: 2
-      });
+      CHORDS_CONFIG.push({ key: MAJOR_KEYS[i], name: name, type: 'major', rootIndex: i, octave: 2 });
     });
 
     MINOR_NAMES.forEach((name, i) => {
-      CHORDS_CONFIG.push({
-        key: MINOR_KEYS[i],
-        name: name,
-        type: 'minor',
-        rootIndex: i,
-        octave: 2
-      });
+      CHORDS_CONFIG.push({ key: MINOR_KEYS[i], name: name, type: 'minor', rootIndex: i, octave: 2 });
     });
 
-    // Audio Engine
+    // Audio Engine Setup
     let audioCtx = null;
     let masterGain = null;
     let masterLimiter = null;
@@ -763,6 +748,7 @@
     }
 
     const instrumentSelect = document.getElementById('instrument-select');
+    const globalOctVal = document.getElementById('global-oct-val');
     const globalOctBtn = document.getElementById('global-oct-btn');
     const transposeBtn = document.getElementById('transpose-btn');
     const transposeVal = document.getElementById('transpose-val');
@@ -779,10 +765,10 @@
     function updateSustainUI() {
       if (isSustainEnabled) {
         sustainBtn.classList.add('active');
-        sustainStatusText.textContent = 'ON (Shift)';
+        sustainStatusText.textContent = 'ON';
       } else {
         sustainBtn.classList.remove('active');
-        sustainStatusText.textContent = 'OFF (Shift)';
+        sustainStatusText.textContent = 'OFF';
       }
     }
 
@@ -802,14 +788,14 @@
       }
     }
 
-    sustainBtn.addEventListener('click', () => {
+    sustainBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
       toggleSustain();
-      sustainBtn.blur();
     });
 
     function applyMasterOctave(newOct) {
       globalMasterOctave = newOct;
-      globalOctBtn.textContent = `🌐 Master Oct: ${globalMasterOctave} (↑/↓)`;
+      globalOctVal.textContent = globalMasterOctave;
       
       CHORDS_CONFIG.forEach(chord => {
         chord.octave = globalMasterOctave;
@@ -819,9 +805,7 @@
 
       if (currentActiveChord) {
         const chord = CHORDS_CONFIG.find(c => c.key === currentActiveChord);
-        if (chord) {
-          toggleOrPlayChord(chord);
-        }
+        if (chord) toggleOrPlayChord(chord);
       }
     }
 
@@ -832,9 +816,7 @@
 
       if (currentActiveChord) {
         const chord = CHORDS_CONFIG.find(c => c.key === currentActiveChord);
-        if (chord) {
-          toggleOrPlayChord(chord);
-        }
+        if (chord) toggleOrPlayChord(chord);
       }
     }
 
@@ -842,34 +824,29 @@
       applyTranspose(0);
     }
 
-    resetTransposeBtn.addEventListener('click', () => {
+    resetTransposeBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
       resetTranspose();
-      resetTransposeBtn.blur();
     });
 
-    transposeBtn.addEventListener('click', () => {
-      if (globalTranspose !== 0) {
-        resetTranspose();
-      } else {
-        applyTranspose(1);
-      }
-      transposeBtn.blur();
+    transposeBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      if (globalTranspose !== 0) resetTranspose();
+      else applyTranspose(1);
     });
 
     instrumentSelect.addEventListener('change', () => {
       if (currentActiveChord) {
         const chord = CHORDS_CONFIG.find(c => c.key === currentActiveChord);
-        if (chord) {
-          toggleOrPlayChord(chord);
-        }
+        if (chord) toggleOrPlayChord(chord);
       }
       instrumentSelect.blur();
     });
 
-    globalOctBtn.addEventListener('click', () => {
+    globalOctBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
       const nextOct = globalMasterOctave === 3 ? 1 : globalMasterOctave + 1;
       applyMasterOctave(nextOct);
-      globalOctBtn.blur();
     });
 
     volumeSlider.addEventListener('input', (e) => {
@@ -880,8 +857,6 @@
         masterGain.gain.setValueAtTime(val, audioCtx.currentTime);
       }
     });
-
-    volumeSlider.addEventListener('change', () => volumeSlider.blur());
 
     let currentActiveChord = null;
     let currentVoices = [];
@@ -921,18 +896,14 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(1800, now);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.16, now + 0.008);
         gainNode.gain.linearRampToValueAtTime(0.09, now + 0.25);
-
         osc.start(now);
         oscillators.push(osc);
 
@@ -945,19 +916,15 @@
         osc2.frequency.setValueAtTime(freq, now);
         osc1.detune.setValueAtTime(-9, now);
         osc2.detune.setValueAtTime(9, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(2400, now);
-
         osc1.connect(filterNode);
         osc2.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.18, now + 0.008);
         gainNode.gain.linearRampToValueAtTime(0.09, now + 0.3);
-
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
@@ -969,24 +936,19 @@
         osc2.type = 'sine';
         osc1.frequency.setValueAtTime(freq, now);
         osc2.frequency.setValueAtTime(freq * 2, now);
-
         const osc2Gain = audioCtx.createGain();
         osc2Gain.gain.setValueAtTime(0.12, now);
         osc2Gain.gain.linearRampToValueAtTime(0.0001, now + 0.5);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(1400, now);
-
         osc1.connect(filterNode);
         osc2.connect(osc2Gain);
         osc2Gain.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.22, now + 0.02);
         gainNode.gain.linearRampToValueAtTime(0.12, now + 0.4);
-
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
@@ -995,19 +957,15 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'bandpass';
         filterNode.frequency.setValueAtTime(1100, now);
         filterNode.Q.setValueAtTime(1.5, now);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.22, now + 0.015);
         gainNode.gain.linearRampToValueAtTime(0.12, now + 0.35);
-
         osc.start(now);
         oscillators.push(osc);
 
@@ -1018,13 +976,10 @@
         osc2.type = 'sine';
         osc1.frequency.setValueAtTime(freq, now);
         osc2.frequency.setValueAtTime(freq * 1.5, now);
-
         osc1.connect(gainNode);
         osc2.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.12, now + 0.03);
-
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
@@ -1033,63 +988,49 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'highpass';
         filterNode.frequency.setValueAtTime(300, now);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.16, now + 0.005);
         gainNode.gain.linearRampToValueAtTime(0.06, now + 0.4);
-
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'acoustic_guitar') {
         const strumOffset = noteIndex * 0.03;
         const startTime = now + strumOffset;
-
         const osc = audioCtx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, startTime);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(3200, startTime);
         filterNode.frequency.linearRampToValueAtTime(600, startTime + 1.5);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, startTime);
         gainNode.gain.linearRampToValueAtTime(0.24, startTime + 0.01);
         gainNode.gain.linearRampToValueAtTime(0.07, startTime + 1.2);
-
         osc.start(startTime);
         oscillators.push(osc);
 
       } else if (instrument === 'nylon_guitar') {
         const strumOffset = noteIndex * 0.025;
         const startTime = now + strumOffset;
-
         const osc = audioCtx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, startTime);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(1600, startTime);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, startTime);
         gainNode.gain.linearRampToValueAtTime(0.22, startTime + 0.02);
         gainNode.gain.linearRampToValueAtTime(0.07, startTime + 1.4);
-
         osc.start(startTime);
         oscillators.push(osc);
 
@@ -1097,40 +1038,31 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(1100, now);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.25, now + 0.015);
         gainNode.gain.linearRampToValueAtTime(0.12, now + 0.8);
-
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'muted_guitar') {
         const strumOffset = noteIndex * 0.018;
         const startTime = now + strumOffset;
-
         const osc = audioCtx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, startTime);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(800, startTime);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, startTime);
         gainNode.gain.linearRampToValueAtTime(0.24, startTime + 0.005);
         gainNode.gain.linearRampToValueAtTime(0.0001, startTime + 0.18);
-
         osc.start(startTime);
         oscillators.push(osc);
 
@@ -1143,18 +1075,14 @@
         osc2.frequency.setValueAtTime(freq, now);
         osc1.detune.setValueAtTime(-6, now);
         osc2.detune.setValueAtTime(6, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(1500, now);
-
         osc1.connect(filterNode);
         osc2.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.12, now + 0.25);
-
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
@@ -1163,19 +1091,15 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(2200, now);
         filterNode.frequency.linearRampToValueAtTime(400, now + 0.3);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.24, now + 0.005);
         gainNode.gain.linearRampToValueAtTime(0.02, now + 0.4);
-
         osc.start(now);
         oscillators.push(osc);
 
@@ -1183,18 +1107,14 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.frequency.setValueAtTime(750, now);
         filterNode.frequency.linearRampToValueAtTime(2000, now + 1.2);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.14, now + 0.4);
-
         osc.start(now);
         oscillators.push(osc);
 
@@ -1202,20 +1122,16 @@
         const osc = audioCtx.createOscillator();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
         filterNode.Q.setValueAtTime(3, now);
         filterNode.frequency.setValueAtTime(300, now);
         filterNode.frequency.linearRampToValueAtTime(2800, now + 0.12);
         filterNode.frequency.linearRampToValueAtTime(1200, now + 0.6);
-
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
         gainNode.gain.linearRampToValueAtTime(0.14, now + 0.08);
-
         osc.start(now);
         oscillators.push(osc);
       }
@@ -1227,6 +1143,7 @@
       if (!voicesList || voicesList.length === 0 || !audioCtx) return;
       
       const now = audioCtx.currentTime;
+      // When Stop or Esc is pressed, it smoothly fades out nicely
       const releaseTime = immediate ? 0.03 : 1.20;
 
       voicesList.forEach(({ oscillators, gainNode }) => {
@@ -1283,12 +1200,10 @@
           whiteKey.innerHTML = `<span>${keyDef.name}<sub style="font-size:0.5rem">${octaveNum}</sub></span>`;
           whiteKey.dataset.keyIndex = whiteIndex;
 
-          const handleKeyAction = (e) => {
+          whiteKey.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             playSoloKey(whiteIndex, whiteSemitone, whiteKey);
-          };
-
-          whiteKey.addEventListener('pointerdown', handleKeyAction);
+          });
 
           container.appendChild(whiteKey);
           pianoKeyElementsMap.set(whiteIndex, whiteKey);
@@ -1302,13 +1217,11 @@
             blackKey.innerHTML = `<span>${keyDef.blackName}</span>`;
             blackKey.dataset.keyIndex = blackIndex;
 
-            const handleBlackAction = (e) => {
+            blackKey.addEventListener('pointerdown', (e) => {
               e.preventDefault();
               e.stopPropagation();
               playSoloKey(blackIndex, blackSemitone, blackKey);
-            };
-
-            blackKey.addEventListener('pointerdown', handleBlackAction);
+            });
 
             container.appendChild(blackKey);
             pianoKeyElementsMap.set(blackIndex, blackKey);
@@ -1437,7 +1350,7 @@
           <div class="key-badge">${chord.key}</div>
           <div class="chord-name">${chord.name}</div>
         </div>
-        <button class="octave-btn" id="oct-btn-${chord.key}" title="Click to cycle octave (1 -> 2 -> 3)">Oct ${chord.octave}</button>
+        <button class="octave-btn" id="oct-btn-${chord.key}" title="Cycle octave">Oct ${chord.octave}</button>
       `;
 
       const octBtn = pad.querySelector('.octave-btn');
@@ -1445,15 +1358,14 @@
       pad.addEventListener('mouseenter', () => { hoveredChord = chord; });
       pad.addEventListener('mouseleave', () => { if (hoveredChord === chord) hoveredChord = null; });
 
+      // Handle touch devices to focus octave correctly
+      pad.addEventListener('touchstart', () => { hoveredChord = chord; }, {passive: true});
+
       octBtn.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
-      });
-
-      octBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+        e.preventDefault();
         chord.octave = chord.octave === 3 ? 1 : chord.octave + 1;
         octBtn.textContent = `Oct ${chord.octave}`;
-        octBtn.blur();
         
         if (currentActiveChord === chord.key) {
           toggleOrPlayChord(chord);
@@ -1483,7 +1395,8 @@
       chordPadMap.set(chord.key.toLowerCase(), { element: pad, data: chord });
     });
 
-    stopButton.addEventListener('click', () => {
+    stopButton.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
       initAudio();
       stopCurrentChord(false);
       activeSoloVoices.forEach(vList => stopVoices(vList, false));
@@ -1491,7 +1404,6 @@
       pianoKeyElementsMap.forEach(el => el.classList.remove('active-solo'));
       physicalKeysDown.clear();
       heldPointerKeys.clear();
-      stopButton.blur();
     });
 
     window.addEventListener('keydown', (e) => {
