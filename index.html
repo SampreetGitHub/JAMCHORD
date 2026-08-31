@@ -212,6 +212,35 @@
       text-align: left;
     }
 
+    /* Mobile Transpose Buttons (Hidden on PC, visible on mobile) */
+    .mobile-trans-btns {
+      display: none;
+      gap: 0.25rem;
+      margin-left: 0.35rem;
+    }
+
+    .mobile-trans-btn {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 0.1rem 0.45rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .mobile-trans-btn:active {
+      background: #38bdf8;
+      color: #070a12;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-trans-btns {
+        display: inline-flex; /* Shows touch buttons only on mobile/tablet */
+      }
+    }
+
     .btn-reset-trans {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.02));
       color: #f59e0b;
@@ -565,6 +594,10 @@
 
     <button id="transpose-btn" class="btn-control" title="Transpose pitch">
       🎵 Transpose: <span id="transpose-val">0 st</span> (←/→)
+      <span class="mobile-trans-btns">
+        <button class="mobile-trans-btn" id="mob-trans-minus" type="button">-</button>
+        <button class="mobile-trans-btn" id="mob-trans-plus" type="button">+</button>
+      </span>
     </button>
 
     <button id="reset-transpose-btn" class="btn-reset-trans" title="Reset transpose">
@@ -716,6 +749,8 @@
     const sustainStatusText = document.getElementById('sustain-status-text');
     const stopButton = document.getElementById('stop-btn');
     const playingChordLabel = document.getElementById('playing-chord-label');
+    const mobTransMinus = document.getElementById('mob-trans-minus');
+    const mobTransPlus = document.getElementById('mob-trans-plus');
 
     let isSustainEnabled = false;
 
@@ -786,10 +821,25 @@
       resetTranspose();
     });
 
+    // Mobile touch buttons logic for transpose
+    mobTransMinus.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      applyTranspose(globalTranspose - 1);
+    });
+
+    mobTransPlus.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      applyTranspose(globalTranspose + 1);
+    });
+
     transposeBtn.addEventListener('pointerdown', (e) => {
       e.preventDefault();
-      if (globalTranspose !== 0) resetTranspose();
-      else applyTranspose(1);
+      if (window.innerWidth > 768) {
+        if (globalTranspose !== 0) resetTranspose();
+        else applyTranspose(1);
+      }
     });
 
     instrumentSelect.addEventListener('change', () => {
