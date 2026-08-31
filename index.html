@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JAM CHORD</title>
-  <!-- Browser Tab Favicon Logo -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎹</text></svg>">
   <style>
     :root {
@@ -127,7 +126,6 @@
     select option {
       background: #090d16;
       color: #fff;
-      padding: 0.4rem;
     }
 
     /* Black Background for Instrument Dropdown Category Headings */
@@ -419,7 +417,7 @@
     .octave-btn {
       background: #090d16;
       color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
       padding: 0.35rem 0.6rem;
       border-radius: 6px;
       font-size: 0.75rem;
@@ -608,7 +606,6 @@
     <h1>JAM CHORD</h1>
   </header>
 
-  <!-- Controls Panel -->
   <div class="controls">
     <div class="control-group">
       <label for="instrument-select">Instrument:</label>
@@ -637,29 +634,24 @@
       </select>
     </div>
 
-    <!-- Master Octave Cycle Button -->
     <button id="global-oct-btn" class="btn-control" title="Cycle octave (1 -> 2 -> 3) or use Up/Down Arrow keys">
       🌐 Master Oct: 2 (↑/↓)
     </button>
 
-    <!-- Transpose Pitch Control Button -->
     <button id="transpose-btn" class="btn-control" title="Use Left/Right arrow keys to transpose pitch (+/- semitones)">
       🎵 Transpose: <span id="transpose-val">0 st</span> (←/→)
     </button>
 
-    <!-- Dedicated Reset Transpose Button -->
     <button id="reset-transpose-btn" class="btn-reset-trans" title="Click or press 'Tab' to reset transpose to 0 st">
       🔄 Reset (Tab)
     </button>
 
-    <!-- Full Range Master Volume Slider -->
     <div class="volume-container">
       <label for="volume-slider">Volume:</label>
       <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1.00">
       <span id="vol-display" class="vol-display">100%</span>
     </div>
 
-    <!-- Single Unified Sustain Toggle Button -->
     <button id="sustain-btn" class="btn-sustain-toggle" title="Click or press Shift key to toggle sustain">
       🎛️ Sustain: <span id="sustain-status-text">OFF (Shift)</span>
     </button>
@@ -681,7 +673,6 @@
     </div>
   </div>
 
-  <!-- Interactive 5-Octave Playable Visual Piano (C2 to B6) -->
   <div class="piano-wrapper">
     <div class="piano-title">
       <span>🎹 Live Playable 5-Octave Piano (C2 – B6)</span>
@@ -1271,6 +1262,7 @@
       if (!voicesList || voicesList.length === 0 || !audioCtx) return;
       
       const now = audioCtx.currentTime;
+      // When Stop or Esc is pressed, immediate is false so it smoothly fades out nicely
       const releaseTime = immediate ? 0.03 : 1.20;
 
       voicesList.forEach(({ oscillators, gainNode }) => {
@@ -1525,8 +1517,8 @@
 
     stopButton.addEventListener('click', () => {
       initAudio();
-      stopCurrentChord(true);
-      activeSoloVoices.forEach(vList => stopVoices(vList, true));
+      stopCurrentChord(false); // Smooth fade out
+      activeSoloVoices.forEach(vList => stopVoices(vList, false)); // Smooth fade out
       activeSoloVoices.clear();
       pianoKeyElementsMap.forEach(el => el.classList.remove('active-solo'));
       physicalKeysDown.clear();
@@ -1600,8 +1592,8 @@
 
       if (e.key === 'Escape') {
         e.preventDefault();
-        stopCurrentChord(true);
-        activeSoloVoices.forEach(vList => stopVoices(vList, true));
+        stopCurrentChord(false); // Smooth fade out
+        activeSoloVoices.forEach(vList => stopVoices(vList, false)); // Smooth fade out
         activeSoloVoices.clear();
         pianoKeyElementsMap.forEach(el => el.classList.remove('active-solo'));
         physicalKeysDown.clear();
