@@ -206,26 +206,6 @@
       transform: scale(0.96);
     }
 
-    @media (hover: hover) {
-      .btn-control:hover {
-        background: rgba(56, 189, 248, 0.2);
-        border-color: rgba(56, 189, 248, 0.6);
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-      }
-      .btn-reset-trans:hover {
-        background: rgba(245, 158, 11, 0.2);
-        border-color: rgba(245, 158, 11, 0.6);
-      }
-      .btn-sustain-toggle:hover {
-        border-color: rgba(148, 163, 184, 0.4);
-        color: #fff;
-      }
-      .btn-stop:hover {
-        background: linear-gradient(135deg, #f87171, #ef4444);
-        box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
-      }
-    }
-
     #transpose-val {
       display: inline-block;
       min-width: 34px;
@@ -304,13 +284,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
-    @media (hover: hover) {
-      .chord-pad:hover {
-        background-color: var(--card-hover);
-        border-color: rgba(56, 189, 248, 0.4);
-      }
-    }
-
     .chord-pad.major.active {
       background-color: var(--major-accent) !important;
       border-color: #c7d2fe !important;
@@ -367,12 +340,6 @@
       touch-action: manipulation;
     }
 
-    @media (hover: hover) {
-      .octave-btn:hover {
-        background: #38bdf8;
-        color: #090d16;
-      }
-    }
     .octave-btn:active {
       transform: scale(0.92);
       background: #38bdf8;
@@ -593,15 +560,15 @@
     </div>
 
     <button id="global-oct-btn" class="btn-control" title="Cycle master octave">
-      🌐 Oct: <span id="global-oct-val">2</span> (↑/↓)
+      🌐 Master Oct: <span id="global-oct-val">2</span> (↑/↓)
     </button>
 
     <button id="transpose-btn" class="btn-control" title="Transpose pitch">
-      🎵 Trans: <span id="transpose-val">0 st</span> (←/→)
+      🎵 Transpose: <span id="transpose-val">0 st</span> (←/→)
     </button>
 
     <button id="reset-transpose-btn" class="btn-reset-trans" title="Reset transpose">
-      🔄 Reset
+      🔄 Reset (Tab)
     </button>
 
     <div class="volume-container">
@@ -611,7 +578,7 @@
     </div>
 
     <button id="sustain-btn" class="btn-sustain-toggle" title="Toggle Sustain">
-      🎛️ Sustain: <span id="sustain-status-text">OFF</span>
+      🎛️ Sustain: <span id="sustain-status-text">OFF (Shift)</span>
     </button>
 
     <button id="stop-btn" class="btn-stop" title="Stop Audio (Esc)">
@@ -755,10 +722,10 @@
     function updateSustainUI() {
       if (isSustainEnabled) {
         sustainBtn.classList.add('active');
-        sustainStatusText.textContent = 'ON';
+        sustainStatusText.textContent = 'ON (Shift)';
       } else {
         sustainBtn.classList.remove('active');
-        sustainStatusText.textContent = 'OFF';
+        sustainStatusText.textContent = 'OFF (Shift)';
       }
     }
 
