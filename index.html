@@ -42,7 +42,7 @@
     /* Clean Glowing Heading */
     header {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
     }
 
     header h1 {
@@ -63,32 +63,25 @@
       100% { filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.6)); }
     }
 
-    /* Single-Line Fluid Navigation Bar (Scrollable on Mobile) */
+    /* Navigation Bar: Line 1 (up to Transpose) & Line 2 (the rest) */
     .controls {
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: 0.75rem;
       background: var(--card-bg);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.75rem;
+      padding: 0.85rem 1.25rem;
       border-radius: 16px;
       margin-bottom: 1.5rem;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       width: 100%;
       max-width: 1400px;
-      overflow-x: auto;
-      white-space: nowrap;
       position: relative;
       z-index: 10;
-    }
-
-    .controls::-webkit-scrollbar {
-      height: 0px;
-      background: transparent;
     }
 
     .control-group {
@@ -134,7 +127,7 @@
       padding: 0.5rem;
     }
 
-    /* Aesthetic Volume Slider */
+    /* Aesthetic Volume & Release Sliders */
     .volume-container {
       display: flex;
       align-items: center;
@@ -170,7 +163,7 @@
       box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
     }
 
-    .vol-display {
+    .vol-display, .release-display {
       font-size: 0.78rem;
       font-weight: 700;
       color: #38bdf8;
@@ -178,7 +171,7 @@
       text-align: right;
     }
 
-    /* Action Buttons */
+    /* Original Action Buttons Design */
     .btn-control, .btn-reset-trans, .btn-sustain-toggle, .btn-stop {
       padding: 0.5rem 0.85rem;
       border-radius: 10px;
@@ -204,6 +197,26 @@
 
     .btn-control:active, .btn-reset-trans:active, .btn-sustain-toggle:active {
       transform: scale(0.96);
+    }
+
+    @media (hover: hover) {
+      .btn-control:hover {
+        background: rgba(56, 189, 248, 0.2);
+        border-color: rgba(56, 189, 248, 0.6);
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+      }
+      .btn-reset-trans:hover {
+        background: rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.6);
+      }
+      .btn-sustain-toggle:hover {
+        border-color: rgba(148, 163, 184, 0.4);
+        color: #fff;
+      }
+      .btn-stop:hover {
+        background: linear-gradient(135deg, #f87171, #ef4444);
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+      }
     }
 
     #transpose-val {
@@ -268,6 +281,13 @@
 
     .btn-stop:active {
       transform: scale(0.92);
+    }
+
+    /* Invisible line-break breaker to force the split right after Transpose */
+    .controls-break {
+      flex-basis: 100%;
+      height: 0;
+      margin: 0;
     }
 
     /* Grid Layout */
@@ -612,9 +632,17 @@
       </span>
     </button>
 
+    <div class="controls-break"></div>
+
     <button id="reset-transpose-btn" class="btn-reset-trans" title="Reset transpose">
       🔄 Reset (Tab)
     </button>
+
+    <div class="volume-container">
+      <label for="release-slider">Release:</label>
+      <input id="release-slider" type="range" min="0.1" max="3.0" step="0.1" value="1.2">
+      <span id="release-display" class="release-display">1.2s</span>
+    </div>
 
     <div class="volume-container">
       <label for="volume-slider">Vol:</label>
@@ -719,7 +747,7 @@
       CHORDS_CONFIG.push({ key: MINOR_KEYS[i], name: name, type: 'minor', rootIndex: i, octave: 2 });
     });
 
-    // Audio Engine Setup with Legato Cross-Fading
+    // Audio Engine Setup
     let audioCtx = null;
     let masterGain = null;
     let masterLimiter = null;
@@ -757,6 +785,8 @@
     const resetTransposeBtn = document.getElementById('reset-transpose-btn');
     const volumeSlider = document.getElementById('volume-slider');
     const volDisplay = document.getElementById('vol-display');
+    const releaseSlider = document.getElementById('release-slider');
+    const releaseDisplay = document.getElementById('release-display');
     const sustainBtn = document.getElementById('sustain-btn');
     const sustainStatusText = document.getElementById('sustain-status-text');
     const stopButton = document.getElementById('stop-btn');
@@ -796,6 +826,23 @@
       e.preventDefault();
       toggleSustain();
     });
+
+    releaseSlider.addEventListener('input', (e) => {
+      releaseDisplay.textContent = `${parseFloat(e.target.value).toFixed(1)}s`;
+    });
+
+    releaseSlider.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      let step = 0.1;
+      let val = parseFloat(releaseSlider.value);
+      if (e.deltaY < 0) {
+        val = Math.min(3.0, val + step);
+      } else {
+        val = Math.max(0.1, val - step);
+      }
+      releaseSlider.value = val.toFixed(1);
+      releaseDisplay.textContent = `${parseFloat(releaseSlider.value).toFixed(1)}s`;
+    }, { passive: false });
 
     function applyMasterOctave(newOct) {
       globalMasterOctave = newOct;
@@ -1325,7 +1372,8 @@
       if (!voicesList || voicesList.length === 0 || !audioCtx) return;
       
       const now = audioCtx.currentTime;
-      const releaseTime = immediate ? 0.03 : 1.20;
+      const customRelease = parseFloat(releaseSlider.value);
+      const releaseTime = immediate ? 0.03 : customRelease;
 
       voicesList.forEach(({ oscillators, gainNode }) => {
         try {
@@ -1491,7 +1539,6 @@
       }
     }
 
-    // Smooth Legato Transition / Cross-fade between chord changes
     function toggleOrPlayChord(chordData) {
       initAudio();
 
@@ -1500,18 +1547,13 @@
         return;
       }
 
-      // Smooth Cross-fade: Keep previous voices temporarily while starting new ones
       const oldVoices = currentVoices;
       if (oldVoices.length > 0) {
-        stopVoices(oldVoices, false); // Triggers graceful 1.2s ambient decay release
+        stopVoices(oldVoices, false);
       }
 
       const currentInst = instrumentSelect.value;
       const { frequencies } = getChordDetails(chordData.rootIndex, chordData.type, chordData.octave);
-      
-      // Slight 60ms overlapping swell for seamless legato connection
-      setTimeout(() => {}, 60);
-
       currentVoices = frequencies.map((freq, idx) => startVoice(freq, currentInst, idx));
       
       if (currentActiveChord) {
@@ -1702,4 +1744,4 @@
     window.addEventListener('keydown', () => initAudio(), { once: true });
   </script>
 </body>
-</html3E
+</html>
