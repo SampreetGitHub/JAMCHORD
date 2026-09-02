@@ -212,7 +212,7 @@
       text-align: left;
     }
 
-    /* Mobile Transpose Buttons (Hidden on PC, visible on mobile) */
+    /* Mobile Transpose Buttons */
     .mobile-trans-btns {
       display: none;
       gap: 0.25rem;
@@ -237,7 +237,7 @@
 
     @media (max-width: 768px) {
       .mobile-trans-btns {
-        display: inline-flex; /* Shows touch buttons only on mobile/tablet */
+        display: inline-flex;
       }
     }
 
@@ -372,7 +372,7 @@
     .octave-btn:active {
       transform: scale(0.92);
       background: #38bdf8;
-      color: #090d16;
+      color: #070a12;
     }
 
     /* 5-Octave Piano Keyboard */
@@ -564,8 +564,20 @@
     <div class="control-group">
       <label for="instrument-select">Inst:</label>
       <select id="instrument-select">
+        <optgroup label="🍃 Ambient & Meditative">
+          <option value="meditation_bowl" selected>Tibetan Singing Bowl</option>
+          <option value="music_box">Lullaby Music Box</option>
+          <option value="warm_pad">Warm Cinematic Ambient Pad</option>
+          <option value="celestial_harp">Ethereal Harp</option>
+          <option value="glass_harmonica">Angelic Glass Harmonica</option>
+          <option value="lofi_ep">Mellow Lo-Fi Electric Piano</option>
+          <option value="crystal_chimes">Crystalline Wind Chimes</option>
+          <option value="deep_space">Deep Cosmic Space Drone</option>
+          <option value="serene_flute">Serene Atmospheric Flute</option>
+          <option value="warm_cello">Warm Acoustic Cello</option>
+        </optgroup>
         <optgroup label="🎹 Pianos & Keyboards">
-          <option value="piano" selected>Concert Grand Piano</option>
+          <option value="piano">Concert Grand Piano</option>
           <option value="upright">Bright Upright Piano</option>
           <option value="honkytonk">Honky-Tonk Ragtime Piano</option>
           <option value="rhodes">Warm Rhodes MK I</option>
@@ -707,7 +719,7 @@
       CHORDS_CONFIG.push({ key: MINOR_KEYS[i], name: name, type: 'minor', rootIndex: i, octave: 2 });
     });
 
-    // Audio Engine Setup
+    // Audio Engine Setup with Legato Cross-Fading
     let audioCtx = null;
     let masterGain = null;
     let masterLimiter = null;
@@ -718,11 +730,11 @@
         audioCtx = new AudioContextClass();
 
         masterLimiter = audioCtx.createDynamicsCompressor();
-        masterLimiter.threshold.setValueAtTime(-1.0, audioCtx.currentTime);
-        masterLimiter.knee.setValueAtTime(40, audioCtx.currentTime);
-        masterLimiter.ratio.setValueAtTime(12, audioCtx.currentTime);
-        masterLimiter.attack.setValueAtTime(0, audioCtx.currentTime);
-        masterLimiter.release.setValueAtTime(0.25, audioCtx.currentTime);
+        masterLimiter.threshold.setValueAtTime(-2.0, audioCtx.currentTime);
+        masterLimiter.knee.setValueAtTime(30, audioCtx.currentTime);
+        masterLimiter.ratio.setValueAtTime(8, audioCtx.currentTime);
+        masterLimiter.attack.setValueAtTime(0.01, audioCtx.currentTime);
+        masterLimiter.release.setValueAtTime(0.3, audioCtx.currentTime);
 
         masterGain = audioCtx.createGain();
         const initialVol = parseFloat(volumeSlider.value);
@@ -821,7 +833,6 @@
       resetTranspose();
     });
 
-    // Mobile touch buttons logic for transpose
     mobTransMinus.addEventListener('pointerdown', (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -879,59 +890,226 @@
 
       let filterNode = null;
 
-      if (instrument === 'piano') {
+      if (instrument === 'meditation_bowl') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.frequency.setValueAtTime(freq * 2.76, now);
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.22, now + 0.15);
+        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.8);
+        osc1.start(now);
+        osc2.start(now);
+        oscillators.push(osc1, osc2);
+
+      } else if (instrument === 'music_box') {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'bandpass';
+        filterNode.frequency.setValueAtTime(freq * 1.5, now);
+        filterNode.Q.setValueAtTime(3.0, now);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.18, now + 0.005);
+        gainNode.gain.linearRampToValueAtTime(0.04, now + 0.6);
+        osc.start(now);
+        oscillators.push(osc);
+
+      } else if (instrument === 'warm_pad') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = 'triangle';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.frequency.setValueAtTime(freq * 0.5, now);
+        osc1.detune.setValueAtTime(-5, now);
+        osc2.detune.setValueAtTime(5, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(500, now);
+        filterNode.frequency.linearRampToValueAtTime(1400, now + 1.2);
+        osc1.connect(filterNode);
+        osc2.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.4);
+        osc1.start(now);
+        osc2.start(now);
+        oscillators.push(osc1, osc2);
+
+      } else if (instrument === 'celestial_harp') {
+        const strumOffset = noteIndex * 0.04;
+        const startTime = now + strumOffset;
+        const osc = audioCtx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(1600, startTime);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.20, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.06, startTime + 1.2);
+        osc.start(startTime);
+        oscillators.push(osc);
+
+      } else if (instrument === 'glass_harmonica') {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(2500, now);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.14, now + 0.2);
+        gainNode.gain.linearRampToValueAtTime(0.08, now + 0.8);
+        osc.start(now);
+        oscillators.push(osc);
+
+      } else if (instrument === 'lofi_ep') {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.detune.setValueAtTime(8, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(850, now);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.22, now + 0.03);
+        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.5);
+        osc.start(now);
+        oscillators.push(osc);
+
+      } else if (instrument === 'crystal_chimes') {
+        const strumOffset = noteIndex * 0.05;
+        const startTime = now + strumOffset;
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq * 2, now);
+        osc.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.14, startTime + 0.005);
+        gainNode.gain.linearRampToValueAtTime(0.01, startTime + 1.0);
+        osc.start(startTime);
+        oscillators.push(osc);
+
+      } else if (instrument === 'deep_space') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(freq * 0.25, now);
+        osc2.frequency.setValueAtTime(freq * 0.5, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(200, now);
+        filterNode.frequency.linearRampToValueAtTime(700, now + 2.0);
+        osc1.connect(filterNode);
+        osc2.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.25, now + 0.8);
+        osc1.start(now);
+        osc2.start(now);
+        oscillators.push(osc1, osc2);
+
+      } else if (instrument === 'serene_flute') {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(900, now);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.16, now + 0.15);
+        gainNode.gain.linearRampToValueAtTime(0.10, now + 0.6);
+        osc.start(now);
+        oscillators.push(osc);
+
+      } else if (instrument === 'warm_cello') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = 'triangle';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(freq * 0.5, now);
+        osc2.frequency.setValueAtTime(freq * 0.5, now);
+        osc1.detune.setValueAtTime(-3, now);
+        osc2.detune.setValueAtTime(3, now);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(800, now);
+        osc1.connect(filterNode);
+        osc2.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(0.18, now + 0.2);
+        osc1.start(now);
+        osc2.start(now);
+        oscillators.push(osc1, osc2);
+
+      } else if (instrument === 'piano') {
         const osc = audioCtx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
-
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(3200, now);
-        filterNode.frequency.linearRampToValueAtTime(1200, now + 0.8);
-
+        filterNode.frequency.setValueAtTime(2200, now);
+        filterNode.frequency.linearRampToValueAtTime(900, now + 1.0);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
-
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.24, now + 0.01);
-        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.35);
-
+        gainNode.gain.linearRampToValueAtTime(0.20, now + 0.03);
+        gainNode.gain.linearRampToValueAtTime(0.10, now + 0.5);
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'upright') {
         const osc = audioCtx.createOscillator();
-        osc.type = 'sawtooth';
+        osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(1800, now);
+        filterNode.frequency.setValueAtTime(1400, now);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.16, now + 0.008);
-        gainNode.gain.linearRampToValueAtTime(0.09, now + 0.25);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0.08, now + 0.3);
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'honkytonk') {
         const osc1 = audioCtx.createOscillator();
         const osc2 = audioCtx.createOscillator();
-        osc1.type = 'triangle';
-        osc2.type = 'sawtooth';
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
         osc1.frequency.setValueAtTime(freq, now);
         osc2.frequency.setValueAtTime(freq, now);
-        osc1.detune.setValueAtTime(-9, now);
-        osc2.detune.setValueAtTime(9, now);
+        osc1.detune.setValueAtTime(-5, now);
+        osc2.detune.setValueAtTime(5, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(2400, now);
+        filterNode.frequency.setValueAtTime(1800, now);
         osc1.connect(filterNode);
         osc2.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.18, now + 0.008);
-        gainNode.gain.linearRampToValueAtTime(0.09, now + 0.3);
+        gainNode.gain.linearRampToValueAtTime(0.16, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0.08, now + 0.4);
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
@@ -944,35 +1122,34 @@
         osc1.frequency.setValueAtTime(freq, now);
         osc2.frequency.setValueAtTime(freq * 2, now);
         const osc2Gain = audioCtx.createGain();
-        osc2Gain.gain.setValueAtTime(0.12, now);
-        osc2Gain.gain.linearRampToValueAtTime(0.0001, now + 0.5);
+        osc2Gain.gain.setValueAtTime(0.08, now);
+        osc2Gain.gain.linearRampToValueAtTime(0.0001, now + 0.6);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(1400, now);
+        filterNode.frequency.setValueAtTime(1100, now);
         osc1.connect(filterNode);
         osc2.connect(osc2Gain);
         osc2Gain.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.22, now + 0.02);
-        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.4);
+        gainNode.gain.linearRampToValueAtTime(0.18, now + 0.04);
+        gainNode.gain.linearRampToValueAtTime(0.10, now + 0.5);
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
 
       } else if (instrument === 'wurlitzer') {
         const osc = audioCtx.createOscillator();
-        osc.type = 'sawtooth';
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
-        filterNode.type = 'bandpass';
-        filterNode.frequency.setValueAtTime(1100, now);
-        filterNode.Q.setValueAtTime(1.5, now);
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(1300, now);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.22, now + 0.015);
-        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.35);
+        gainNode.gain.linearRampToValueAtTime(0.18, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0.09, now + 0.4);
         osc.start(now);
         oscillators.push(osc);
 
@@ -982,31 +1159,49 @@
         osc1.type = 'sine';
         osc2.type = 'sine';
         osc1.frequency.setValueAtTime(freq, now);
-        osc2.frequency.setValueAtTime(freq * 1.5, now);
+        osc2.frequency.setValueAtTime(freq * 2, now);
         osc1.connect(gainNode);
         osc2.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.03);
+        gainNode.gain.linearRampToValueAtTime(0.10, now + 0.08);
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
 
       } else if (instrument === 'harpsichord') {
         const osc = audioCtx.createOscillator();
-        osc.type = 'sawtooth';
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
-        filterNode.type = 'highpass';
-        filterNode.frequency.setValueAtTime(300, now);
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(2000, now);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.16, now + 0.005);
-        gainNode.gain.linearRampToValueAtTime(0.06, now + 0.4);
+        gainNode.gain.linearRampToValueAtTime(0.14, now + 0.008);
+        gainNode.gain.linearRampToValueAtTime(0.05, now + 0.3);
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'acoustic_guitar') {
+        const strumOffset = noteIndex * 0.035;
+        const startTime = now + strumOffset;
+        const osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+        filterNode = audioCtx.createBiquadFilter();
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(1800, startTime);
+        filterNode.frequency.linearRampToValueAtTime(500, startTime + 1.2);
+        osc.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.gain.setValueAtTime(0.0001, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.20, startTime + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0.06, startTime + 1.0);
+        osc.start(startTime);
+        oscillators.push(osc);
+
+      } else if (instrument === 'nylon_guitar') {
         const strumOffset = noteIndex * 0.03;
         const startTime = now + strumOffset;
         const osc = audioCtx.createOscillator();
@@ -1014,30 +1209,12 @@
         osc.frequency.setValueAtTime(freq, startTime);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(3200, startTime);
-        filterNode.frequency.linearRampToValueAtTime(600, startTime + 1.5);
+        filterNode.frequency.setValueAtTime(1200, startTime);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.24, startTime + 0.01);
-        gainNode.gain.linearRampToValueAtTime(0.07, startTime + 1.2);
-        osc.start(startTime);
-        oscillators.push(osc);
-
-      } else if (instrument === 'nylon_guitar') {
-        const strumOffset = noteIndex * 0.025;
-        const startTime = now + strumOffset;
-        const osc = audioCtx.createOscillator();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, startTime);
-        filterNode = audioCtx.createBiquadFilter();
-        filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(1600, startTime);
-        osc.connect(filterNode);
-        filterNode.connect(gainNode);
-        gainNode.gain.setValueAtTime(0.0001, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.22, startTime + 0.02);
-        gainNode.gain.linearRampToValueAtTime(0.07, startTime + 1.4);
+        gainNode.gain.linearRampToValueAtTime(0.18, startTime + 0.03);
+        gainNode.gain.linearRampToValueAtTime(0.06, startTime + 1.2);
         osc.start(startTime);
         oscillators.push(osc);
 
@@ -1047,98 +1224,96 @@
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(1100, now);
+        filterNode.frequency.setValueAtTime(900, now);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.25, now + 0.015);
-        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.8);
+        gainNode.gain.linearRampToValueAtTime(0.20, now + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0.10, now + 0.7);
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'muted_guitar') {
-        const strumOffset = noteIndex * 0.018;
+        const strumOffset = noteIndex * 0.02;
         const startTime = now + strumOffset;
         const osc = audioCtx.createOscillator();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, startTime);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(800, startTime);
+        filterNode.frequency.setValueAtTime(650, startTime);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.24, startTime + 0.005);
-        gainNode.gain.linearRampToValueAtTime(0.0001, startTime + 0.18);
+        gainNode.gain.linearRampToValueAtTime(0.20, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.0001, startTime + 0.15);
         osc.start(startTime);
         oscillators.push(osc);
 
       } else if (instrument === 'strings') {
         const osc1 = audioCtx.createOscillator();
         const osc2 = audioCtx.createOscillator();
-        osc1.type = 'sawtooth';
-        osc2.type = 'sawtooth';
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
         osc1.frequency.setValueAtTime(freq, now);
         osc2.frequency.setValueAtTime(freq, now);
-        osc1.detune.setValueAtTime(-6, now);
-        osc2.detune.setValueAtTime(6, now);
+        osc1.detune.setValueAtTime(-4, now);
+        osc2.detune.setValueAtTime(4, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(1500, now);
+        filterNode.frequency.setValueAtTime(1000, now);
         osc1.connect(filterNode);
         osc2.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.25);
+        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.4);
         osc1.start(now);
         osc2.start(now);
         oscillators.push(osc1, osc2);
 
       } else if (instrument === 'pizzicato') {
         const osc = audioCtx.createOscillator();
-        osc.type = 'sawtooth';
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(2200, now);
-        filterNode.frequency.linearRampToValueAtTime(400, now + 0.3);
+        filterNode.frequency.setValueAtTime(1600, now);
+        filterNode.frequency.linearRampToValueAtTime(300, now + 0.25);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.24, now + 0.005);
-        gainNode.gain.linearRampToValueAtTime(0.02, now + 0.4);
+        gainNode.gain.linearRampToValueAtTime(0.20, now + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.02, now + 0.35);
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'pad') {
         const osc = audioCtx.createOscillator();
-        osc.type = 'triangle';
+        osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(750, now);
-        filterNode.frequency.linearRampToValueAtTime(2000, now + 1.2);
+        filterNode.frequency.setValueAtTime(600, now);
+        filterNode.frequency.linearRampToValueAtTime(1500, now + 1.5);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.14, now + 0.4);
+        gainNode.gain.linearRampToValueAtTime(0.14, now + 0.5);
         osc.start(now);
         oscillators.push(osc);
 
       } else if (instrument === 'brass') {
         const osc = audioCtx.createOscillator();
-        osc.type = 'sawtooth';
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
         filterNode = audioCtx.createBiquadFilter();
         filterNode.type = 'lowpass';
-        filterNode.Q.setValueAtTime(3, now);
-        filterNode.frequency.setValueAtTime(300, now);
-        filterNode.frequency.linearRampToValueAtTime(2800, now + 0.12);
-        filterNode.frequency.linearRampToValueAtTime(1200, now + 0.6);
+        filterNode.frequency.setValueAtTime(400, now);
+        filterNode.frequency.linearRampToValueAtTime(1600, now + 0.15);
         osc.connect(filterNode);
         filterNode.connect(gainNode);
         gainNode.gain.setValueAtTime(0.0001, now);
-        gainNode.gain.linearRampToValueAtTime(0.14, now + 0.08);
+        gainNode.gain.linearRampToValueAtTime(0.12, now + 0.1);
         osc.start(now);
         oscillators.push(osc);
       }
@@ -1316,6 +1491,7 @@
       }
     }
 
+    // Smooth Legato Transition / Cross-fade between chord changes
     function toggleOrPlayChord(chordData) {
       initAudio();
 
@@ -1324,13 +1500,26 @@
         return;
       }
 
-      stopCurrentChord(true);
+      // Smooth Cross-fade: Keep previous voices temporarily while starting new ones
+      const oldVoices = currentVoices;
+      if (oldVoices.length > 0) {
+        stopVoices(oldVoices, false); // Triggers graceful 1.2s ambient decay release
+      }
 
       const currentInst = instrumentSelect.value;
       const { frequencies } = getChordDetails(chordData.rootIndex, chordData.type, chordData.octave);
-      currentVoices = frequencies.map((freq, idx) => startVoice(freq, currentInst, idx));
-      currentActiveChord = chordData.key;
+      
+      // Slight 60ms overlapping swell for seamless legato connection
+      setTimeout(() => {}, 60);
 
+      currentVoices = frequencies.map((freq, idx) => startVoice(freq, currentInst, idx));
+      
+      if (currentActiveChord) {
+        const oldEntry = chordPadMap.get(currentActiveChord);
+        if (oldEntry) oldEntry.element.classList.remove('active');
+      }
+
+      currentActiveChord = chordData.key;
       const entry = chordPadMap.get(chordData.key);
       if (entry) entry.element.classList.add('active');
 
@@ -1513,4 +1702,4 @@
     window.addEventListener('keydown', () => initAudio(), { once: true });
   </script>
 </body>
-</html>
+</html3E
